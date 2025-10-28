@@ -10,8 +10,9 @@ load_dotenv()
 
 RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
 HF_API_TOKEN = os.getenv("HF_API_TOKEN")
-#YOUR_HF_MODEL_ID = "shwetgaur/SG_OG_name_generator"
-HF_API_URL = f"https://huggingface.co/shwetgaur/SG_OG_name_generator"
+YOUR_HF_MODEL_ID = "shwetgaur/SG_OG_name_generator"
+# NEW, CORRECTED URL
+HF_API_URL = f"https://router.huggingface.co/hf-inference/models/{YOUR_HF_MODEL_ID}"
 DOMAINR_API_URL = "https://domainr.p.rapidapi.com/v2/status"
 
 app = FastAPI(title="BizBrand.ai API")

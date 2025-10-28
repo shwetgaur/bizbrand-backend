@@ -14,7 +14,8 @@ HF_API_TOKEN = os.getenv("HF_API_TOKEN")
 
 # This is your fine-tuned model ID from Hugging Face
 YOUR_HF_MODEL_ID = "shwetgaur/SG_OG_name_generator"  # <-- CORRECTED
-HF_API_URL = f"https://api-inference.huggingface.co/models/{YOUR_HF_MODEL_ID}"
+# NEW, CORRECTED CODE
+HF_API_URL = f"https://router.huggingface.co/hf-inference/models/{YOUR_HF_MODEL_ID}"
 
 # This is the new Domainr API endpoint
 DOMAINR_API_URL = "https://domainr.p.rapidapi.com/v2/status"  # <-- REPLACEMENT

@@ -32,7 +32,7 @@ class NameRequest(BaseModel):
 # IMPORTANT: You MUST update this list with your real Vercel URL
 origins = [
     "http://localhost:3000",  # For local Next.js development
-    "https://bizbrand-frontend-7v6e0fszr-shwetgaurs-projects.vercel.app" # <-- PUT YOUR DEPLOYED FRONTEND URL HERE
+    "https://bizbrand-frontend-14vpdtgo7-shwetgaurs-projects.vercel.app" # <-- PUT YOUR DEPLOYED FRONTEND URL HERE
 ]
 
 app.add_middleware(

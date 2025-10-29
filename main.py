@@ -5,18 +5,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
+from transformers import pipeline
 
+# Load environment variables
 load_dotenv()
 
 RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
-HF_API_TOKEN = os.getenv("HF_API_TOKEN")
 YOUR_HF_MODEL_ID = "shwetgaur/SG_OG_name_generator"
-# NEW, CORRECTED URL
-HF_API_URL = f"https://api-inference.huggingface.co/models/{YOUR_HF_MODEL_ID}"
 DOMAINR_API_URL = "https://domainr.p.rapidapi.com/v2/status"
 
+# Initialize FastAPI
 app = FastAPI(title="BizBrand.ai API")
 
+# Allow frontend access
 origins = [
     "http://localhost:3000",
     "https://bizbrand-frontend.vercel.app"
@@ -30,6 +31,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Load the Hugging Face model locally (only once)
+print("🔄 Loading Hugging Face model... please wait.")
+generator = pipeline("text2text-generation", model=YOUR_HF_MODEL_ID)
+print("✅ Model loaded successfully!")
+
+# Request model
 class NameRequest(BaseModel):
     description: str
 
@@ -41,36 +48,29 @@ def read_root():
 
 @app.post("/generate-name")
 async def generate_name(request: NameRequest):
-    headers = {"Authorization": f"Bearer {HF_API_TOKEN}"}
-    payload = {
-        "inputs": request.description,
-        "parameters": {
-            "num_return_sequences": 5,
-            "num_beams": 10
-        }
-    }
-
+    """
+    Generate 4 creative business names based on description using your fine-tuned T5 model.
+    """
     try:
-        response = requests.post(HF_API_URL, headers=headers, json=payload)
-        response.raise_for_status()
-        generated_data = response.json()
+        prompt = f"Generate 4 creative business names for: {request.description}"
 
-        if "error" in generated_data:
-            # Model might still be loading
-            if "is currently loading" in generated_data["error"]:
-                return JSONResponse(
-                    status_code=503,
-                    content={"error": "Model is loading, please try again in a few seconds."}
-                )
-            return JSONResponse(
-                status_code=500,
-                content={"error": generated_data["error"]}
-            )
+        # Generate names using your fine-tuned model
+        results = generator(
+            prompt,
+            max_new_tokens=40,
+            num_return_sequences=4,  # must be ≤ num_beams
+            num_beams=4,
+            do_sample=True,
+            temperature=0.8
+        )
 
-        generated_names = [item["generated_text"] for item in generated_data]
+        # Extract names and remove duplicates / formatting
+        generated_names = list({res["generated_text"].strip() for res in results})
+        generated_names = [name.replace("\n", " ").strip() for name in generated_names]
+
         return {"names": generated_names}
 
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         return JSONResponse(
             status_code=500,
             content={"error": str(e)}
@@ -79,6 +79,9 @@ async def generate_name(request: NameRequest):
 
 @app.get("/check-domain")
 async def check_domain(domain: str):
+    """
+    Check if a .com domain is available using Domainr API.
+    """
     domain_to_check = f"{domain}.com"
     querystring = {"domain": domain_to_check}
     headers = {

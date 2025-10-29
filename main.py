@@ -29,7 +29,7 @@ app = FastAPI(title="BizBrand.ai API")
 # Allow frontend access
 origins = [
     "http://localhost:3000",
-    "https://bizbrand-frontend.vercel.app"
+    "https://bizbrand-frontend-q4vp.vercel.app"
 ]
 
 app.add_middleware(

@@ -11,8 +11,17 @@ from transformers import pipeline
 load_dotenv()
 
 RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
+HF_TOKEN = os.getenv("HF_TOKEN")
 YOUR_HF_MODEL_ID = "shwetgaur/SG_OG_name_generator"
 DOMAINR_API_URL = "https://domainr.p.rapidapi.com/v2/status"
+
+
+from huggingface_hub import login
+
+if HF_TOKEN:
+    login(token=HF_TOKEN)
+else:
+    print("⚠️ Warning: HF_TOKEN not set. Using unauthenticated access.")
 
 # Initialize FastAPI
 app = FastAPI(title="BizBrand.ai API")
@@ -33,7 +42,7 @@ app.add_middleware(
 
 # Load the Hugging Face model locally (only once)
 print("🔄 Loading Hugging Face model... please wait.")
-generator = pipeline("text2text-generation", model=YOUR_HF_MODEL_ID)
+generator = pipeline("text2text-generation", model=YOUR_HF_MODEL_ID,token=HF_TOKEN)
 print("✅ Model loaded successfully!")
 
 # Request model

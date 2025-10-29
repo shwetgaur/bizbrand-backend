@@ -19,7 +19,7 @@ app = FastAPI(title="BizBrand.ai API")
 
 origins = [
     "http://localhost:3000",
-    "https://bizbrand-frontend-q4vp.vercel.app"
+    "https://bizbrand-frontend.vercel.app"
 ]
 
 app.add_middleware(
